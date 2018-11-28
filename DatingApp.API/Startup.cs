@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API
 {
@@ -33,7 +35,16 @@ namespace DatingApp.API
             services.AddCors();
             // services.AddSingleton -- gives problem for concurent request
             // services.AddTransient -- each time a request comes from repository the new istance will be created - for lighrt weight servicces
-            services.AddScoped<IAuthRepository,AuthReposiory>();  
+            services.AddScoped<IAuthRepository,AuthReposiory>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options=>
+                Options.TokenValidationParameters=new TokenValidationParameters{
+                    ValidateIssuerSigningKey=true,
+                    IssuerSigningKey=new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer=false,
+                    ValidateAudience=false
+                }
+            );
+
 
         }
 
@@ -51,6 +62,7 @@ namespace DatingApp.API
 
             // app.UseHttpsRedirection();
             app.UseCors(x=>x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
