@@ -31,6 +31,10 @@ namespace DatingApp.API
             services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors();
+            // services.AddSingleton -- gives problem for concurent request
+            // services.AddTransient -- each time a request comes from repository the new istance will be created - for lighrt weight servicces
+            services.AddScoped<IAuthRepository,AuthReposiory>();  
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
