@@ -8,7 +8,6 @@ import {JwtHelperService} from '@auth0/angular-jwt';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Dating app';
   jwtHelper = new JwtHelperService();
 
   constructor(private authService: AuthService){}
